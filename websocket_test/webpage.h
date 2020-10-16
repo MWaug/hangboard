@@ -9,7 +9,7 @@ char webpage[] PROGMEM = R"=====(
 <body onload="javascript:init()">
 <!-- Adding a slider for controlling data rate -->
 <div>
-  <input type="range" min="5" max="250" value="50" id="dataRateSlider" oninput="sendDataRate()" />
+  <input type="range" min="2" max="100" value="50" id="dataRateSlider" oninput="sendDataRate()" />
   <label for="dataRateSlider" id="dataRateLabel">Period: 50ms</label>
 </div>
 <hr />
@@ -53,6 +53,8 @@ char webpage[] PROGMEM = R"=====(
       var today = new Date();
       var t = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
       addData(t, data.value);
+      document.getElementById("currentHang").innerHTML = "Current Hang: " + data.ch + "s";
+      document.getElementById("lastHang").innerHTML = "Last Hang: " + data.lh + "s";
     }
   }
   function sendDataRate(){
