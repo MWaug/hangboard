@@ -16,6 +16,10 @@ char webpage[] PROGMEM = R"=====(
 <div>
   <canvas id="line-chart" width="800" height="450"></canvas>
 </div>
+<div>
+  <h1 id="currentHang">Current Hang: None</h1>
+  <h1 id="lastHang">Last Hang: None</h1>
+</div>
 <!-- Adding a websocket to the client (webpage) -->
 <script>
   var webSocket, dataPlot;
@@ -38,7 +42,7 @@ char webpage[] PROGMEM = R"=====(
         labels: [],
         datasets: [{
           data: [],
-          label: "Temperature (C)",
+          label: "Weight (lbs)",
           borderColor: "#3e95cd",
           fill: false
         }]
