@@ -18,8 +18,8 @@ char webpage[] PROGMEM = R"=====(
 </select>
 <!-- Add a dropdown for controlling the person working out -->
 <select id="person" oninput="sendDeviceData()">
-  <option value="Caroline" data-number="caroline">Caroline</option>
   <option value="Max" data-number="max">Max</option>
+  <option value="Caroline" data-number="caroline">Caroline</option>
   <option value="Other" data-number="other">Other</option>
 </select>
 <!-- Add a button to turn off data logging -->
@@ -35,8 +35,8 @@ char webpage[] PROGMEM = R"=====(
 <hr />
 <!-- Adding a slider for controlling scale calibration slope -->
 <div>
-  <input type="range" min="9000" max="18000" value="15600" id="calibSlider" oninput="sendDeviceData()" />
-  <label for="calibSlider" id="calibSliderLabel">Scale Units Per LB: 15600</label>
+  <input type="range" min="9000" max="18000" value="17098" id="calibSlider" oninput="sendDeviceData()" />
+  <label for="calibSlider" id="calibSliderLabel">Scale Units Per LB: 17098</label>
 </div>
 <!-- Debugging section -->
 <div>
