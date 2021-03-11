@@ -2,7 +2,7 @@
 Q2HX711 hx711(D5,D6);
 
 long hx711_offset = 7785000; // Scale at zero lbs
-long hx711_scale_unit_per_lb = 15600;
+long hx711_scale_unit_per_lb = calib;
 
 void update_scale_calibration(long c) {
   hx711_scale_unit_per_lb = c;

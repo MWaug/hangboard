@@ -16,7 +16,7 @@ float aveWeight = 0;
 
 // Application data sent from webpage
 const char* person = "Max";
-long calib = 17098;
+long calib = 21100;
 const char* rung = "middle-edge";
 const char* note = "";
 int dataLogEnable = 1;

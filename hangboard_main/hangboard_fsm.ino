@@ -14,6 +14,7 @@ enum state cur_state = ON_GROUND;
  */
 float tick_hangboard() {
   float weight = read_hx711_weight();
+  cur_weight = weight;
   if( (cur_state == ON_GROUND) && (weight > hang_threshold) ) {
       StartHang = millis();
       Serial.println("Hanging!");
