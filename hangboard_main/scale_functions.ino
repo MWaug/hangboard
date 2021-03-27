@@ -1,5 +1,7 @@
 #include "Q2HX711.h"
-Q2HX711 hx711(D5,D6);
+// hx711(OUT,CLK);
+// D2 = GPIO4, D1 = GPIO5
+Q2HX711 hx711(D2,D1);
 
 long hx711_offset = 7785000; // Scale at zero lbs
 long hx711_scale_unit_per_lb = calib;
