@@ -6,6 +6,7 @@
 #include "secret.h"
 #include "webpage.h"
 #include "ArduinoJson.h"
+#include <PubSubClient.h>
 
 /* 
  *  Webserver variables
@@ -13,6 +14,10 @@
 // Connecting to the Internet
 const char* ssid = SECRET_SSID; 
 const char* password = SECRET_PASSWORD;
+const char* mqtt_server = SECRET_MQTT_SERVER_IP;
+const char* mqtt_username = SECRET_MQTT_USERNAME;
+const char* mqtt_password = SECRET_MQTT_PASSWORD;
+const int mqtt_port = 1883;
 
 // Web server
 ESP8266WebServer server;
@@ -20,12 +25,67 @@ ESP8266WebServer server;
 // Adding a websocket to the server
 WebSocketsServer webSocket = WebSocketsServer(81);
 
-// Memory pool for JSON object tree.
+// MQTT PubSub Client
+WiFiClient espClient;
+PubSubClient mqtt_client(espClient);
+unsigned long lastMsg = 0;
+#define MSG_BUFFER_SIZE (100)
+char msg[MSG_BUFFER_SIZE];
+const int MQTT_RECONNECT_DELAY_MS = 5000;
+
+// Memory pool for JSON object sent over the WebSocket.
 //
 // Inside the brackets, 200 is the size of the pool in bytes,
 // If the JSON object is more complex, you need to increase that value.
 // See https://bblanchon.github.io/ArduinoJson/assistant/
 StaticJsonDocument<200> jsonDoc;
+
+/*
+ * MQTT Functions
+ */
+void mqtt_reconnect() {
+  // Loop until mqtt is reconnected
+  while (!mqtt_client.connected()) {
+    Serial.println("Attempting MQTT connection...");
+    String clientId = "ESP8266Client-";
+    clientId += String(WiFi.macAddress());
+    // Attempt to connect
+    if(mqtt_client.connect(clientId.c_str(), mqtt_username, mqtt_password)) {
+      Serial.println("mqtt_client connected");
+      // Once connected, publish an announcement
+      mqtt_client.publish("connections", "connected");
+      Serial.println("Subscribing to `updates`");
+      mqtt_client.subscribe("updates");
+    } else {
+      Serial.print("Falied, rc=");
+      Serial.print(mqtt_client.state());
+      printf(" mqtt_connect will try again in %f seconds\n", MQTT_RECONNECT_DELAY_MS/1000.0);
+      // Wait before retrying
+      delay(MQTT_RECONNECT_DELAY_MS);
+    }
+  }
+}
+
+void mqtt_tick_client() {
+  if(!mqtt_client.connected()) {
+    mqtt_reconnect();
+  }
+}
+
+void mqtt_callback(char* topic, byte* payload, unsigned int length) {
+  Serial.print("Message arrived [");
+  Serial.print(topic);
+  Serial.print("] ");
+  for (size_t i = 0; i < length; i++) {
+    Serial.print((char)payload[i]);
+  }
+  Serial.println();
+}
+
+void mqtt_setup() {
+  mqtt_client.setServer(mqtt_server, mqtt_port);
+  mqtt_client.setCallback(mqtt_callback);
+}
 
 /*
  * OTA functions
@@ -38,7 +98,7 @@ void OTA_setup() {
   // ArduinoOTA.setHostname("myesp8266");
 
   // No authentication by default
-  // ArduinoOTA.setPassword("admin");
+  // ArduinoOTA.setPassword("admin"_mqttcallback_mqtt);
 
   // Password can be set with it's md5 value as well
   // MD5(admin) = 21232f297a57a5a743894a0e4a801fc3
@@ -95,8 +155,9 @@ void connect_to_internet() {
   Serial.println(WiFi.localIP());
 }
 
-void setup_server( void (*eventHandler)(uint8_t, WStype_t, uint8_t *, size_t) ) {
+void setup_servers( void (*webSocketEventHandler)(uint8_t, WStype_t, uint8_t *, size_t) ) {
   OTA_setup();
+  mqtt_setup();
   Serial.println("");
   server.begin();
   Serial.println("Server started");
@@ -105,19 +166,19 @@ void setup_server( void (*eventHandler)(uint8_t, WStype_t, uint8_t *, size_t) ) 
   });
   server.begin();
   webSocket.begin();
-  webSocket.onEvent(eventHandler);
+  webSocket.onEvent(webSocketEventHandler);
   Serial.println("Serving webpage on text/html");
 }
 
-
 void tickServer() {
+  mqtt_tick_client();
   ArduinoOTA.handle();
   webSocket.loop();
   server.handleClient();
 }
 
 /*
- * Messaging functions
+ * Websocket functions
  */
 
 void webSocketSendString(const char * s, size_t length) {

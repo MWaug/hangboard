@@ -22,7 +22,7 @@ const char* note = "";
 int dataLogEnable = 1;
 
 // Testing mode
-bool test_mode = false; // Disable HX711 interaction. Print some extra statements
+bool test_mode = true; // Disable HX711 interaction. Print some extra statements
 
 // Web trigger for data transmission
 bool do_socket_send = false;
@@ -33,7 +33,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
   // Do something with the data from the client
   if(type == WStype_TEXT){
     // float scale_unit_per_lb_float = (float) atof((const char *) &payload[0]);
-    int success = receiveWebsocketString( (const char *) &payload[0]);
+    receiveWebsocketString( (const char *) &payload[0]);
     update_scale_calibration((long) calib);
   }
 }
@@ -46,7 +46,7 @@ void setup() {
   Serial.begin(115200);
   connect_to_internet();
   Serial.println("Connected to the internet");
-  setup_server(webSocketEvent);
+  setup_servers(webSocketEvent);
   Serial.println("Setup the server");
   zero_out_scale();
   Serial.println("Zeroed out the scale");

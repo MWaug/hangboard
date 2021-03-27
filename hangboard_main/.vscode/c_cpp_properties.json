@@ -30,6 +30,7 @@
                 "/Users/mwaugaman/Library/Arduino15/packages/esp8266/hardware/esp8266/2.7.4/libraries/ESP8266mDNS/src",
                 "/Users/mwaugaman/Library/Arduino15/packages/esp8266/hardware/esp8266/2.7.4/libraries/ArduinoOTA",
                 "/Users/mwaugaman/Documents/Arduino/libraries/ArduinoJson/src",
+                "/Users/mwaugaman/Documents/Arduino/libraries/PubSubClient/src",
                 "/Users/mwaugaman/Library/Arduino15/packages/esp8266/hardware/esp8266/2.7.4/libraries/Hash/src",
                 "/Users/mwaugaman/Library/Arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/xtensa-lx106-elf/include/c++/4.8.2",
                 "/Users/mwaugaman/Library/Arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/xtensa-lx106-elf/include/c++/4.8.2/xtensa-lx106-elf",
