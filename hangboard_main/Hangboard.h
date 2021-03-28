@@ -14,6 +14,7 @@ private:
   HangboardScale _scale;
   bool _do_socket_send;
   Ticker _socket_send_timer;
+  void flagWebsocketSend();
   void incomingWebSocketEvent(uint8_t num, WStype_t type, uint8_t *payload,
                               size_t length);
 

@@ -50,13 +50,17 @@ void Hangboard::setup() {
   Serial.println("Connected to the internet");
   setupOTA();
   Serial.println("Setup OTA programming");
-  setupWebServer(incomingWebSocketEvent);
+  setupWebServer();
+  webSocket.onEvent(std::bind(&Hangboard::incomingWebSocketEvent, this,
+                              std::placeholders::_1, std::placeholders::_2,
+                              std::placeholders::_3, std::placeholders::_4));
   Serial.println("Setup web server");
   setupMQTT();
   Serial.println("Setup MQTT client");
   zeroOutScale();
   Serial.println("Zeroed out the scale");
-  _socket_send_timer.attach_ms(WEBSOCKET_SEND_INTERVAL_MS, flagWebsocketSend);
+  _socket_send_timer.attach_ms(WEBSOCKET_SEND_INTERVAL_MS,
+                               [this]() -> void { flagWebsocketSend(); });
   Serial.println("Done with setup");
 }
 

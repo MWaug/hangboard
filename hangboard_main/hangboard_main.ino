@@ -1,4 +1,5 @@
 #include "Hangboard.h"
+#include "WebServerHelpers.h"
 #include <Arduino.h>
 #include <Ticker.h>
 #include <WebSocketsServer.h>

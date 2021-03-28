@@ -25,15 +25,16 @@ WebSocketsServer webSocket = WebSocketsServer(81);
 // See https://bblanchon.github.io/ArduinoJson/assistant/
 StaticJsonDocument<200> webSocketRecvJsonDoc;
 
-void setupWebServer(void (*webSocketEventHandler)(uint8_t, WStype_t, uint8_t *,
-                                                  size_t)) {
+// void setupWebServer(void (*webSocketEventHandler)(uint8_t, WStype_t, uint8_t
+// *,
+//                                                   size_t)) {
+void setupWebServer() {
   Serial.println("");
   web_server.begin();
   Serial.println("Server started");
   web_server.on("/", []() { web_server.send_P(200, "text/html", webpage); });
   web_server.begin();
   webSocket.begin();
-  webSocket.onEvent(webSocketEventHandler);
   Serial.println("Serving webpage on text/html");
 }
 
