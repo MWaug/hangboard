@@ -34,8 +34,8 @@ void mqtt_reconnect() {
     String clientId = "ESP8266Client-";
     clientId += String(WiFi.macAddress());
     // Attempt to connect
-    if (mqtt_client.connect(clientId.c_str(), SECRET_MQTT_PASSWORD,
-                            SECRET_MQTT_USERNAME)) {
+    if (mqtt_client.connect(clientId.c_str(), SECRET_MQTT_USERNAME,
+                            SECRET_MQTT_PASSWORD)) {
       Serial.println("mqtt_client connected");
       // Once connected, publish an announcement
       mqtt_client.publish("connections", "connected");
