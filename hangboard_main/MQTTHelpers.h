@@ -2,6 +2,7 @@
 #define MQTTHelpers_h
 
 #include "ArduinoJson.h"
+#include "HangboardDefines.h"
 #include "secret.h"
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
@@ -22,7 +23,7 @@ const int mqtt_port = 1883;
 // Inside the brackets, 200 is the size of the pool in bytes,
 // If the JSON object is more complex, you need to increase that value.
 // See https://bblanchon.github.io/ArduinoJson/assistant/
-StaticJsonDocument<200> jsonDoc;
+StaticJsonDocument<MQTT_JSON_SIZE_BYTES> mqttRecvJsonDoc;
 
 /*
  * MQTT Functions
@@ -59,19 +60,56 @@ void tickMQTTClient() {
   mqtt_client.loop();
 }
 
-void mqtt_callback(char *topic, byte *payload, unsigned int length) {
-  Serial.print("Message arrived [");
-  Serial.print(topic);
-  Serial.print("] ");
-  for (size_t i = 0; i < length; i++) {
-    Serial.print((char)payload[i]);
+void setupMQTT() { mqtt_client.setServer(SECRET_MQTT_SERVER_IP, mqtt_port); }
+
+void mqttPublish(const char *topic, const char *payload) {
+  if (!mqtt_client.publish(topic, payload)) {
+    printf("mqtt failed to publish %s to topic %s\n", payload, topic);
+    printf("mqtt_client.state() = %d\n", mqtt_client.state());
   }
-  Serial.println();
 }
 
-void setupMQTT() {
-  mqtt_client.setServer(SECRET_MQTT_SERVER_IP, mqtt_port);
-  mqtt_client.setCallback(mqtt_callback);
+void mqttSendFinishHangEvent(float max_weight, float ave_weight,
+                             unsigned long start_hang_ms,
+                             unsigned long end_hang_ms,
+                             unsigned long cur_time_ms, const char *device_id,
+                             const char *topic) {
+  String json = "{\"max_weight\":";
+  json += String(max_weight, 2);
+  json += ",\"ave_weight\":";
+  json += String(ave_weight, 2);
+  json += ",\"start_hang_ms\":";
+  json += String(start_hang_ms);
+  json += ",\"end_hang_ms\":";
+  json += String(end_hang_ms);
+  json += ",\"cur_time_ms\":";
+  json += String(cur_time_ms);
+  json += ",\"device_id\":";
+  json += String(device_id);
+  json += "}";
+  mqttPublish(topic, json.c_str());
+}
+
+void mqttSendStartHangEvent(unsigned long start_hang_ms, const char *device_id,
+                            const char *topic) {
+  String json = "{\"start_hang_ms\":";
+  json += String(start_hang_ms);
+  json += ",\"device_id\":";
+  json += String(device_id);
+  json += "}";
+  mqttPublish(topic, json.c_str());
+}
+
+void mqttSendWeight(float weight, long cur_time_ms, const char *device_id,
+                    const char *topic) {
+  String json = "{\"weight\":";
+  json += String(weight, 2);
+  json += ",\"cur_time_ms\":";
+  json += String(cur_time_ms);
+  json += ",\"device_id\":";
+  json += String(device_id);
+  json += "}";
+  mqttPublish(topic, json.c_str());
 }
 
 #endif

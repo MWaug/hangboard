@@ -1,10 +1,10 @@
 #include "HangboardFSM.h"
 
 HangboardFSM::HangboardFSM(float hang_threshold_lbs)
-    : _StartHang(0), _EndHang(0), _hang_threshold_lbs(hang_threshold_lbs),
-      _integratedWeight(0), _lastMeasuredTime(0), _cur_state(ON_GROUND),
-      _last_hang_secs(0), _cur_hang_secs(0), _cur_weight(0), _maxWeight(0),
-      _aveWeight(0) {}
+    : _hang_threshold_lbs(hang_threshold_lbs), _integratedWeight(0),
+      _lastMeasuredTime(0), _cur_state(ON_GROUND), _finished_hang(false),
+      _started_hang(false), _StartHang(0), _EndHang(0), _last_hang_secs(0),
+      _cur_hang_secs(0), _cur_weight(0), _maxWeight(0), _aveWeight(0) {}
 
 HangboardFSM::~HangboardFSM() {}
 
@@ -12,6 +12,8 @@ HangboardFSM::~HangboardFSM() {}
  *  FSM update logic
  */
 void HangboardFSM::tick(float weight, unsigned long time_ms) {
+  _finished_hang = false;
+  _started_hang = false;
   _cur_weight = weight;
   if ((_cur_state == ON_GROUND) && (weight > _hang_threshold_lbs)) {
     _StartHang = time_ms;
@@ -20,6 +22,7 @@ void HangboardFSM::tick(float weight, unsigned long time_ms) {
     _maxWeight = 0;
     _integratedWeight = 0;
     _aveWeight = 0;
+    _started_hang = true;
   }
   // Calculate hang statistics
   if (_cur_state == IN_HANG) {
@@ -40,6 +43,10 @@ void HangboardFSM::tick(float weight, unsigned long time_ms) {
     _last_hang_secs = hang_dur_secs;
     _cur_hang_secs = 0;
     _cur_state = ON_GROUND;
+    _finished_hang = true;
   }
   _lastMeasuredTime = time_ms;
 }
+
+bool HangboardFSM::finishedHang() { return _finished_hang; }
+bool HangboardFSM::startedHang() { return _started_hang; }

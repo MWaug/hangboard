@@ -15,8 +15,12 @@ private:
   bool _do_socket_send;
   Ticker _socket_send_timer;
   void flagWebsocketSend();
-  void incomingWebSocketEvent(uint8_t num, WStype_t type, uint8_t *payload,
-                              size_t length);
+  void handleWebSocketEvent(uint8_t num, WStype_t type, uint8_t *payload,
+                            size_t length);
+  void handleMQTT(char *topic, byte *payload, unsigned int length);
+  void sendStartHangEvent();
+  void sendFinishHangEvent();
+  void sendData();
 
 public:
   Hangboard(uint8_t hx711_clk_pin, uint8_t hx711_dout_pin);
@@ -25,7 +29,6 @@ public:
   ~Hangboard();
   void zeroOutScale();
   void updateScaleCalibration(long c);
-  void sendData();
   float readWeight();
   void setup();
   void loop();

@@ -2,6 +2,7 @@
 #define WebServerHelpers_h
 
 #include "ArduinoJson.h"
+#include "HangboardDefines.h"
 #include <ESP8266WebServer.h>
 #include <ESP8266WiFi.h>
 #include <WebSocketsServer.h>
@@ -22,7 +23,7 @@ extern WebSocketsServer webSocket;
 // Inside the brackets, 200 is the size of the pool in bytes,
 // If the JSON object is more complex, you need to increase that value.
 // See https://bblanchon.github.io/ArduinoJson/assistant/
-extern StaticJsonDocument<200> webSocketRecvJsonDoc;
+extern StaticJsonDocument<WEBSOCKET_JSON_SIZE_BYTES> webSocketRecvJsonDoc;
 
 void setupWebServer();
 void tickWebServer();
