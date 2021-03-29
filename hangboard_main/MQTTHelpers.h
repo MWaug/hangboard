@@ -85,7 +85,7 @@ void mqttSendFinishHangEvent(float max_weight, float ave_weight,
   json += ",\"cur_time_ms\":";
   json += String(cur_time_ms);
   json += ",\"device_id\":";
-  json += String(device_id);
+  json += "\"" + String(device_id) + "\"";
   json += "}";
   mqttPublish(topic, json.c_str());
 }
@@ -95,7 +95,7 @@ void mqttSendStartHangEvent(unsigned long start_hang_ms, const char *device_id,
   String json = "{\"start_hang_ms\":";
   json += String(start_hang_ms);
   json += ",\"device_id\":";
-  json += String(device_id);
+  json += "\"" + String(device_id) + "\"";
   json += "}";
   mqttPublish(topic, json.c_str());
 }
@@ -107,7 +107,7 @@ void mqttSendWeight(float weight, long cur_time_ms, const char *device_id,
   json += ",\"cur_time_ms\":";
   json += String(cur_time_ms);
   json += ",\"device_id\":";
-  json += String(device_id);
+  json += "\"" + String(device_id) + "\"";
   json += "}";
   mqttPublish(topic, json.c_str());
 }
