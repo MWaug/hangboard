@@ -87,6 +87,7 @@ void mqttSendFinishHangEvent(float max_weight, float ave_weight,
   json += ",\"device_id\":";
   json += "\"" + String(device_id) + "\"";
   json += "}";
+  // TODO: Add times and weight to the finish event
   mqttPublish(topic, json.c_str());
 }
 

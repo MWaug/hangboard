@@ -15,6 +15,10 @@ void HangboardFSM::tick(float weight, unsigned long time_ms) {
   _finished_hang = false;
   _started_hang = false;
   _cur_weight = weight;
+  // TODO: Update the hysteresis amount via MQTT
+  float weight_hysteresis = 5;
+
+  // Detect the start of a hang event
   if ((_cur_state == ON_GROUND) && (weight > _hang_threshold_lbs)) {
     _StartHang = time_ms;
     Serial.println("Hanging!");
@@ -24,6 +28,7 @@ void HangboardFSM::tick(float weight, unsigned long time_ms) {
     _aveWeight = 0;
     _started_hang = true;
   }
+
   // Calculate hang statistics
   if (_cur_state == IN_HANG) {
     if (weight > _maxWeight) {
@@ -34,7 +39,9 @@ void HangboardFSM::tick(float weight, unsigned long time_ms) {
     _aveWeight = _integratedWeight / (time_ms - _StartHang);
     _cur_hang_secs = (time_ms - _StartHang) / 1000.0;
   }
-  if ((_cur_state == IN_HANG) && weight < _hang_threshold_lbs - 5) {
+
+  // Detect the end of a hang event
+  if ((_cur_state == IN_HANG) && weight < _hang_threshold_lbs - weight_hysteresis) {
     _EndHang = time_ms;
     unsigned long hang_dur = _EndHang - _StartHang;
     float hang_dur_secs = hang_dur / 1000.0;
